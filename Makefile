@@ -14,7 +14,7 @@ EXC_DIR = bin
 I_CMD = $(addprefix -I, $(SRC_DIR))
 L_CMD = $(addprefix -L, )
 
-CP_FLAGS = $(I_CMD) -O3 -Wall -std=c++11 -march=native
+CP_FLAGS = $(I_CMD) -O3 -Wall -std=c++11 -march=native -DSPOA_TEST_MAIN_
 LD_FLAGS = $(I_CMD) $(L_CMD)
 
 API = $(addprefix $(SRC_DIR)/, alignment.hpp edge.hpp graph.hpp node.hpp spoa.hpp)
