@@ -78,8 +78,11 @@ int main(int argc, char** argv) {
         }
     }
 
-    assert((!fasta_path.empty() || !fastq_path.empty()) && "missing option -a/-q (sequences file)");
-
+    if (fasta_path.empty() && fastq_path.empty()) {
+        printf ("missing option -a/-q (sequences file)\n");
+        help ();
+        return -1;
+    }
     auto params = AlignmentParams(match, mismatch, gap_open, gap_extend, (AlignmentType) algorithm);
 
     std::vector<std::unique_ptr<Chain>> chains;
