@@ -66,7 +66,9 @@ public:
         uint32_t sequence_size, const std::vector<uint32_t>& weights);
 
     void generate_multiple_sequence_alignment(std::vector<std::string>& dst,
-        bool include_consensus = false);
+        bool include_consensus = false,
+        bool include_depths = false,
+        bool include_errors = false);
 
     std::string generate_consensus();
     // returns coverages

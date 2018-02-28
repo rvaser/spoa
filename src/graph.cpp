@@ -342,13 +342,19 @@ bool Graph::is_topologically_sorted() const {
 }
 
 void Graph::generate_multiple_sequence_alignment(std::vector<std::string>& dst,
-    bool include_consensus) {
+    bool include_consensus,
+    bool include_depths,
+    bool include_errors) {
+
+    std::string consensus_str;
+    std::vector<int32_t> depths;
+    std::vector<int32_t> errors;
 
     // assign msa id to each node
     std::vector<int32_t> msa_node_ids(nodes_.size(), -1);
     int32_t base_counter = 0;
     for (uint32_t i = 0; i < nodes_.size(); ++i) {
-        uint32_t node_id = rank_to_node_id_[i];
+        const uint32_t node_id = rank_to_node_id_[i];
 
         msa_node_ids[node_id] = base_counter;
         for (uint32_t j = 0; j < nodes_[node_id]->aligned_nodes_ids_.size(); ++j) {
@@ -357,6 +363,23 @@ void Graph::generate_multiple_sequence_alignment(std::vector<std::string>& dst,
         ++base_counter;
     }
 
+    // get the consensus string if we want to either include the consensus, error, or depths
+    // in the returned MSA
+    if (include_consensus || include_depths || include_errors) {
+        consensus_str.resize(base_counter);
+        std::fill_n(consensus_str.begin(), base_counter, '-');
+        this->traverse_heaviest_bundle();
+        //std::string consensus_str(base_counter, '-');
+        for (const auto& node_id: consensus_) {
+            consensus_str[msa_node_ids[node_id]] =
+                decoder_[nodes_[node_id]->code_];
+        }
+    }
+
+    // initialize depths and errors if they are to be returned
+    if (include_depths) depths.resize(consensus_str.size(), 0);
+    if (include_errors) errors.resize(consensus_str.size(), 0);
+
     // extract sequences from graph and create msa strings (add indels(-) where
     // necessary)
     for (uint32_t i = 0; i < num_sequences_; ++i) {
@@ -364,10 +387,23 @@ void Graph::generate_multiple_sequence_alignment(std::vector<std::string>& dst,
         uint32_t curr_node_id = sequences_begin_nodes_ids_[i];
 
         while (true) {
-            alignment_str[msa_node_ids[curr_node_id]] =
-                decoder_[nodes_[curr_node_id]->code_];
+            const uint32_t msa_i = msa_node_ids[curr_node_id];
+            const char base_code = decoder_[nodes_[curr_node_id]->code_];
+            alignment_str[msa_i] = base_code;
 
-            uint32_t prev_node_id = curr_node_id;
+            if (include_depths || include_errors) {
+                const char cons_code = consensus_str[msa_i];
+                // NB: do not count deletions (i.e. base == '-') in the depths and errors
+                // NB: do not count Ns in the sequence in the depths and errors
+                if (cons_code != '-' && base_code != '-' && base_code != 'N') {
+                    if (include_depths) depths[msa_i] = depths[msa_i] + 1;
+                    if (include_errors && base_code != cons_code) {
+                        errors[msa_i] = errors[msa_i] + 1;
+                    }
+                }
+            }
+
+            const uint32_t prev_node_id = curr_node_id;
             for (const auto& edge: nodes_[prev_node_id]->out_edges_) {
                 for (const auto& label: edge->sequence_labels_) {
                     if (label == i) {
@@ -389,15 +425,31 @@ void Graph::generate_multiple_sequence_alignment(std::vector<std::string>& dst,
     }
 
     if (include_consensus) {
-        // do the same for consensus sequence
-        this->traverse_heaviest_bundle();
-
-        std::string alignment_str(base_counter, '-');
-        for (const auto& node_id: consensus_) {
-            alignment_str[msa_node_ids[node_id]] =
-                decoder_[nodes_[node_id]->code_];
+        dst.emplace_back(consensus_str);
+    }
+    if (include_depths) {
+        int i = 0;
+        std::string depths_str;
+        for (const auto& depth: depths) {
+            if (consensus_str[i] != '-') {
+                if (i > 0) depths_str += ",";
+                depths_str += std::to_string(depth);
+            }
+            i++;
         }
-        dst.emplace_back(alignment_str);
+        dst.emplace_back(depths_str);
+    }
+    if (include_errors) {
+        int i = 0;
+        std::string errors_str;
+        for (const auto& error: errors) {
+            if (consensus_str[i] != '-') {
+                if (i > 0) errors_str += ",";
+                errors_str += std::to_string(error);
+            }
+            i++;
+        }
+        dst.emplace_back(errors_str);
     }
 }
 
