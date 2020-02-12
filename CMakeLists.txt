@@ -45,6 +45,9 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/spoa DESTINATION ${CMAKE_I
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/spoa.pc.in ${CMAKE_CURRENT_BINARY_DIR}/spoa-1.pc @ONLY)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/spoa-1.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 
+add_subdirectory(vendor/cereal EXCLUDE_FROM_ALL)
+include_directories(${PROJECT_SOURCE_DIR}/vendor/cereal/include)
+
 if (spoa_build_executable)
     add_executable(spoa_bin
         src/sequence.cpp
@@ -54,7 +57,7 @@ if (spoa_build_executable)
         add_subdirectory(vendor/bioparser EXCLUDE_FROM_ALL)
     endif()
 
-    target_link_libraries(spoa_bin spoa bioparser)
+    target_link_libraries(spoa_bin spoa bioparser cereal)
     set_target_properties(spoa_bin PROPERTIES OUTPUT_NAME spoa)
 
     install(TARGETS spoa_bin DESTINATION ${CMAKE_INSTALL_BINDIR})
@@ -78,5 +81,5 @@ if (spoa_build_tests)
         add_subdirectory(vendor/googletest/googletest EXCLUDE_FROM_ALL)
     endif()
 
-    target_link_libraries(spoa_test spoa bioparser gtest_main)
+    target_link_libraries(spoa_test spoa bioparser cereal gtest_main)
 endif()
