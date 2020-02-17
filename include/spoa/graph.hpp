@@ -82,8 +82,6 @@ public:
     void clear();
 
     friend std::unique_ptr<Graph> createGraph();
-    friend cereal::BinaryOutputArchive;
-    friend cereal::BinaryInputArchive;
 
     template <class Archive>
     void serialize(Archive& archive)
@@ -92,8 +90,9 @@ public:
 		rank_to_node_id_, sequences_begin_nodes_ids_, consensus_);
     }
 
-private:
     Graph();
+
+private:
     Graph(const Graph&) = delete;
     const Graph& operator=(const Graph&) = delete;
 
