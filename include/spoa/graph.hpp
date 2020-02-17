@@ -175,8 +175,9 @@ public:
 	archive(id_, code_, in_edges_, out_edges_, aligned_nodes_ids_);
     }
 
-private:
     Node(std::uint32_t id, std::uint32_t code);
+
+private:
     Node(const Node&) = delete;
     const Node& operator=(const Node&) = delete;
 
@@ -204,9 +205,10 @@ public:
 	archive(begin_node_id_, end_node_id_, sequence_labels_, total_weight_);
     }
 
-private:
     Edge(std::uint32_t begin_node_id, std::uint32_t end_node_id,
 	 std::uint32_t label, std::uint32_t weight);
+
+private:
     Edge(const Edge&) = delete;
     const Edge& operator=(const Edge&) = delete;
 
