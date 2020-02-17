@@ -45,6 +45,7 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/spoa DESTINATION ${CMAKE_I
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/spoa.pc.in ${CMAKE_CURRENT_BINARY_DIR}/spoa-1.pc @ONLY)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/spoa-1.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 
+set(JUST_INSTALL_CEREAL On)
 add_subdirectory(vendor/cereal EXCLUDE_FROM_ALL)
 include_directories(${PROJECT_SOURCE_DIR}/vendor/cereal/include)
 
