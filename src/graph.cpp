@@ -25,10 +25,6 @@ Node::Node(std::uint32_t id, std::uint32_t code)
 {
 }
 
-Node::Node() : id_(0), code_(0), in_edges_(), out_edges_(), aligned_nodes_ids_()
-{
-}
-
 Node::~Node() {}
 
 bool Node::successor(std::uint32_t& dst, std::uint32_t label) const
