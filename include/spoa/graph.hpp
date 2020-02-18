@@ -142,7 +142,7 @@ private:
 
 class Node {
 public:
-    ~Node(){};
+    ~Node();
 
     std::uint32_t id() const { return id_; }
 
