@@ -177,7 +177,7 @@ public:
 	archive(id_, code_, in_edges_, out_edges_, aligned_nodes_ids_);
     }
 
-    Node();
+    Node() : id_(), code_(), in_edges_(), out_edges_(), aligned_nodes_ids_(){};
     Node(std::uint32_t id, std::uint32_t code);
 
 private:
@@ -207,7 +207,12 @@ public:
 	archive(begin_node_id_, end_node_id_, sequence_labels_, total_weight_);
     }
 
-    Edge(){};
+    Edge()
+	: begin_node_id_(),
+	  end_node_id_(),
+	  sequence_labels_(),
+	  total_weight_(){};
+
     Edge(std::uint32_t begin_node_id, std::uint32_t end_node_id,
 	 std::uint32_t label, std::uint32_t weight);
 
