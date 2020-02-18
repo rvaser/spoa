@@ -177,7 +177,7 @@ public:
 
     Node(){};
     Node(std::uint32_t id, std::uint32_t code);
-    Node(const Node&) = delete;
+    // Node(const Node&) = delete;
     const Node& operator=(const Node&) = delete;
 
 private:
