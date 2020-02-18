@@ -115,6 +115,8 @@ private:
 			      const std::vector<std::uint32_t>& weights,
 			      std::uint32_t begin, std::uint32_t end);
 
+    std::uint32_t total_weights() const;
+
     void topological_sort();
 
     bool is_topologically_sorted() const;
@@ -206,6 +208,8 @@ public:
     {
 	archive(begin_node_id_, end_node_id_, sequence_labels_, total_weight_);
     }
+
+    std::uint32_t total_weight() const { return total_weight_; }
 
     Edge()
 	: begin_node_id_(),

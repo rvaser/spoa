@@ -311,6 +311,17 @@ std::int32_t Graph::add_sequence(const char* sequence,
     return first_node_id;
 }
 
+std::uint32_t Graph::total_weights() const
+{
+    std::uint32_t total_w = 0;
+    for (auto& n : nodes_) {
+	for (auto e : n->out_edges()) {
+	    total_w += e->total_weight();
+	}
+    }
+    return total_w;
+}
+
 void Graph::topological_sort()
 {
     rank_to_node_id_.clear();
