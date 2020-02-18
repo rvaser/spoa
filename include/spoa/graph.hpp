@@ -115,8 +115,6 @@ private:
 			      const std::vector<std::uint32_t>& weights,
 			      std::uint32_t begin, std::uint32_t end);
 
-    std::uint32_t total_weights() const;
-
     void topological_sort();
 
     bool is_topologically_sorted() const;
@@ -151,6 +149,8 @@ public:
     std::uint32_t id() const { return id_; }
 
     std::uint32_t code() const { return code_; }
+
+    std::uint32_t total_weights() const;
 
     const std::vector<std::shared_ptr<Edge>>& in_edges() const
     {
