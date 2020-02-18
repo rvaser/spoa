@@ -311,7 +311,7 @@ std::int32_t Graph::add_sequence(const char* sequence,
     return first_node_id;
 }
 
-std::uint32_t Graph::total_weights() const
+std::uint32_t Graph::total_weights()
 {
     std::uint32_t total_w = 0;
     for (auto& n : nodes_) {
