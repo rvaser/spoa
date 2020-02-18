@@ -175,7 +175,7 @@ public:
 	archive(id_, code_, in_edges_, out_edges_, aligned_nodes_ids_);
     }
 
-    Node(){};
+    Node();
     Node(std::uint32_t id, std::uint32_t code);
 
 private:
