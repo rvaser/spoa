@@ -35,6 +35,8 @@ public:
 	return rank_to_node_id_;
     }
 
+    std::uint32_t total_weights() const;
+
     std::uint32_t num_codes() const { return num_codes_; };
     std::uint32_t num_nodes() const { return nodes_.size(); };
     std::uint32_t num_sequences() const { return num_sequences_; };
@@ -149,8 +151,6 @@ public:
     std::uint32_t id() const { return id_; }
 
     std::uint32_t code() const { return code_; }
-
-    std::uint32_t total_weights() const;
 
     const std::vector<std::shared_ptr<Edge>>& in_edges() const
     {
