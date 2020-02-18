@@ -177,11 +177,10 @@ public:
 
     Node(){};
     Node(std::uint32_t id, std::uint32_t code);
-
-private:
     Node(const Node&) = delete;
     const Node& operator=(const Node&) = delete;
 
+private:
     std::uint32_t id_;
     std::uint32_t code_;
     std::vector<std::shared_ptr<Edge>> in_edges_;
