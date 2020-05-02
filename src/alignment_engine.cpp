@@ -7,6 +7,7 @@
 #include <limits>
 #include <algorithm>
 #include <exception>
+#include <stdexcept>
 
 #include "sisd_alignment_engine.hpp"
 #include "simd_alignment_engine.hpp"
