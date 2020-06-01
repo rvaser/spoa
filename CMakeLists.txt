@@ -74,19 +74,19 @@ set_target_properties(spoa
 if (spoa_generate_dispatch)
 
 if (NOT TARGET cpu_features)
-        add_subdirectory(vendor/cpu_features EXCLUDE_FROM_ALL)
+    add_subdirectory(vendor/cpu_features EXCLUDE_FROM_ALL)
 endif()
 
 list(APPEND Archs avx2 sse4.1 sse2)
 
 foreach(arch IN LISTS Archs)
-add_library(spoa_${arch} OBJECT
-    src/simd_alignment_engine_dispatch.cpp)
-target_include_directories(spoa_${arch} PUBLIC
-    ${INCLUDES})
-set_target_properties(spoa_${arch}
-    PROPERTIES COMPILE_FLAGS "-m${arch}")
-
+add_library(spoa_${arch} OBJECT src/simd_alignment_engine_dispatch.cpp)
+target_include_directories(spoa_${arch} PUBLIC ${INCLUDES})
+if (BUILD_SHARED_LIBS)
+    set_target_properties(spoa_${arch} PROPERTIES COMPILE_FLAGS "-m${arch} -fPIC")
+else()
+    set_target_properties(spoa_${arch} PROPERTIES COMPILE_FLAGS "-m${arch}")
+endif()
 endforeach()
 
 target_link_libraries(spoa

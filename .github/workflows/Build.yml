@@ -1,0 +1,66 @@
+name: build
+
+on:
+  push:
+    branches:
+      - '*'
+
+jobs:
+  default:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: 'recursive'
+    - name: setup
+      run: |
+        sudo apt-get update
+        sudo apt install -y g++
+        sudo apt install -y cmake
+        
+    - name: Build-shared-lib
+      run: |
+        mkdir spoa-shared-lib
+        cd spoa-shared-lib
+        cmake .. -DBUILD_SHARED_LIBS=ON
+        make all
+        sudo make install
+        
+    - name: Build-static-lib
+      run: |
+        mkdir spoa-static-lib
+        cd spoa-static-lib
+        cmake .. -DBUILD_SHARED_LIBS=OFF
+        make all
+        sudo make install
+      
+      
+  generate-dispatch:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: 'recursive'
+    - name: setup
+      run: |
+        sudo apt-get update
+        sudo apt install -y g++
+        sudo apt install -y cmake
+      
+    - name: Build-shared-lib
+      run: |
+        mkdir spoa-shared-lib
+        cd spoa-shared-lib
+        cmake .. -DBUILD_SHARED_LIBS=ON -Dspoa_generate_dispatch=ON
+        make spoa_avx2 spoa_sse4.1 spoa_sse2 spoa
+        sudo make install
+
+    - name: Build-static-lib
+      run: |
+        mkdir spoa-static-lib
+        cd spoa-static-lib
+        cmake .. -DBUILD_SHARED_LIBS=OFF -Dspoa_generate_dispatch=ON
+        make spoa_avx2 spoa_sse4.1 spoa_sse2 spoa
+        sudo make install
+    
+      
