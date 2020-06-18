@@ -75,9 +75,10 @@ AlignmentEngine::AlignmentEngine(AlignmentType type, AlignmentSubtype subtype,
 }
 
 Alignment AlignmentEngine::align(const std::string& sequence,
-    const std::unique_ptr<Graph>& graph) {
+    const std::unique_ptr<Graph>& graph,
+    std::uint32_t* score) {
 
-    return align(sequence.c_str(), sequence.size(), graph);
+    return align(sequence.c_str(), sequence.size(), graph, score);
 }
 
 }

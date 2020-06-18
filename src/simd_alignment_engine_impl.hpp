@@ -667,7 +667,8 @@ void SimdAlignmentEngine<S>::initialize(const char* sequence,
 
 template<Arch S>
 Alignment SimdAlignmentEngine<S>::align(const char* sequence,
-    std::uint32_t sequence_size, const std::unique_ptr<Graph>& graph) noexcept {
+    std::uint32_t sequence_size, const std::unique_ptr<Graph>& graph,
+    std::uint32_t* score) noexcept {
 
     if (graph->nodes().empty() || sequence_size == 0) {
         return Alignment();
@@ -682,19 +683,19 @@ Alignment SimdAlignmentEngine<S>::align(const char* sequence,
 
     if (max_penalty * longest_path < std::numeric_limits<std::int16_t>::max()) {
         if (subtype_ == AlignmentSubtype::kLinear) {
-            return linear<InstructionSet<S,std::int16_t>>(sequence, sequence_size, graph);
+            return linear<InstructionSet<S,std::int16_t>>(sequence, sequence_size, graph, score);
         } else if (subtype_ == AlignmentSubtype::kAffine) {
-            return affine<InstructionSet<S,std::int16_t>>(sequence, sequence_size, graph);
+            return affine<InstructionSet<S,std::int16_t>>(sequence, sequence_size, graph, score);
         } else if (subtype_ == AlignmentSubtype::kConvex) {
-            return convex<InstructionSet<S,std::int16_t>>(sequence, sequence_size, graph);
+            return convex<InstructionSet<S,std::int16_t>>(sequence, sequence_size, graph, score);
         }
     } else {
         if (subtype_ == AlignmentSubtype::kLinear) {
-            return linear<InstructionSet<S,std::int32_t>>(sequence, sequence_size, graph);
+            return linear<InstructionSet<S,std::int32_t>>(sequence, sequence_size, graph, score);
         } else if (subtype_ == AlignmentSubtype::kAffine) {
-            return affine<InstructionSet<S,std::int32_t>>(sequence, sequence_size, graph);
+            return affine<InstructionSet<S,std::int32_t>>(sequence, sequence_size, graph, score);
         } else if (subtype_ == AlignmentSubtype::kConvex) {
-            return convex<InstructionSet<S,std::int32_t>>(sequence, sequence_size, graph);
+            return convex<InstructionSet<S,std::int32_t>>(sequence, sequence_size, graph, score);
         }
     }
 
@@ -710,7 +711,8 @@ Alignment SimdAlignmentEngine<S>::align(const char* sequence,
 template<Arch S>
 template<typename T>
 Alignment SimdAlignmentEngine<S>::linear(const char* sequence,
-    std::uint32_t sequence_size, const std::unique_ptr<Graph>& graph) noexcept {
+    std::uint32_t sequence_size, const std::unique_ptr<Graph>& graph,
+    std::uint32_t* score) noexcept {
 
 #if defined(__AVX2__) || defined(__SSE4_1__) || defined(USE_SIMDE)
 
@@ -1045,6 +1047,10 @@ Alignment SimdAlignmentEngine<S>::linear(const char* sequence,
         }
     }
 
+    if (score != nullptr) {
+      *score = max_score;
+    }
+
     std::reverse(alignment.begin(), alignment.end());
     return alignment;
 
@@ -1058,7 +1064,8 @@ Alignment SimdAlignmentEngine<S>::linear(const char* sequence,
 template<Arch S>
 template<typename T>
 Alignment SimdAlignmentEngine<S>::affine(const char* sequence,
-    std::uint32_t sequence_size, const std::unique_ptr<Graph>& graph) noexcept {
+    std::uint32_t sequence_size, const std::unique_ptr<Graph>& graph,
+    std::uint32_t* score) noexcept {
 
 #if defined(__AVX2__) || defined(__SSE4_1__) || defined(USE_SIMDE)
 
@@ -1476,6 +1483,10 @@ Alignment SimdAlignmentEngine<S>::affine(const char* sequence,
         }
     }
 
+    if (score != nullptr) {
+      *score = max_score;
+    }
+
     std::reverse(alignment.begin(), alignment.end());
     return alignment;
 
@@ -1489,7 +1500,8 @@ Alignment SimdAlignmentEngine<S>::affine(const char* sequence,
 template<Arch S>
 template<typename T>
 Alignment SimdAlignmentEngine<S>::convex(const char* sequence,
-    std::uint32_t sequence_size, const std::unique_ptr<Graph>& graph) noexcept {
+    std::uint32_t sequence_size, const std::unique_ptr<Graph>& graph,
+    std::uint32_t* score) noexcept {
 
 #if defined(__AVX2__) || defined(__SSE4_1__) || defined(USE_SIMDE)
 
@@ -1981,6 +1993,10 @@ Alignment SimdAlignmentEngine<S>::convex(const char* sequence,
                 }
             }
         }
+    }
+
+    if (score != nullptr) {
+      *score = max_score;
     }
 
     std::reverse(alignment.begin(), alignment.end());

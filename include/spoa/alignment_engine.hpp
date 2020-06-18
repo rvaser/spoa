@@ -48,10 +48,12 @@ public:
         std::uint32_t alphabet_size) = 0;
 
     Alignment align(const std::string& sequence,
-        const std::unique_ptr<Graph>& graph);
+        const std::unique_ptr<Graph>& graph,
+        std::uint32_t* score = nullptr);
 
     virtual Alignment align(const char* sequence, std::uint32_t sequence_size,
-        const std::unique_ptr<Graph>& graph) noexcept = 0;
+        const std::unique_ptr<Graph>& graph,
+        std::uint32_t* score = nullptr) noexcept = 0;
 
 protected:
     AlignmentEngine(AlignmentType type, AlignmentSubtype subtype, std::int8_t m,

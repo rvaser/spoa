@@ -241,24 +241,26 @@ void SisdAlignmentEngine::initialize(const char* sequence,
 }
 
 Alignment SisdAlignmentEngine::align(const char* sequence,
-    std::uint32_t sequence_size, const std::unique_ptr<Graph>& graph) noexcept {
+    std::uint32_t sequence_size, const std::unique_ptr<Graph>& graph,
+    std::uint32_t* score) noexcept {
 
     if (graph->nodes().empty() || sequence_size == 0) {
         return Alignment();
     }
 
     if (subtype_ == AlignmentSubtype::kLinear) {
-        return linear(sequence, sequence_size, graph);
+        return linear(sequence, sequence_size, graph, score);
     } else if (subtype_ == AlignmentSubtype::kAffine) {
-        return affine(sequence, sequence_size, graph);
+        return affine(sequence, sequence_size, graph, score);
     } else if (subtype_ == AlignmentSubtype::kConvex) {
-        return convex(sequence, sequence_size, graph);
+        return convex(sequence, sequence_size, graph, score);
     }
     return Alignment();
 }
 
 Alignment SisdAlignmentEngine::linear(const char* sequence,
-    std::uint32_t sequence_size, const std::unique_ptr<Graph>& graph) noexcept {
+    std::uint32_t sequence_size, const std::unique_ptr<Graph>& graph,
+    std::uint32_t* score) noexcept {
 
     std::uint32_t matrix_width = sequence_size + 1;
     std::uint32_t matrix_height = graph->nodes().size() + 1;
@@ -430,12 +432,17 @@ Alignment SisdAlignmentEngine::linear(const char* sequence,
         j = prev_j;
     }
 
+    if (score != nullptr) {
+      *score = max_score;
+    }
+
     std::reverse(alignment.begin(), alignment.end());
     return alignment;
 }
 
 Alignment SisdAlignmentEngine::affine(const char* sequence,
-    std::uint32_t sequence_size, const std::unique_ptr<Graph>& graph) noexcept {
+    std::uint32_t sequence_size, const std::unique_ptr<Graph>& graph,
+    std::uint32_t* score) noexcept {
 
     std::uint32_t matrix_width = sequence_size + 1;
     std::uint32_t matrix_height = graph->nodes().size() + 1;
@@ -652,12 +659,17 @@ Alignment SisdAlignmentEngine::affine(const char* sequence,
         }
     }
 
+    if (score != nullptr) {
+      *score = max_score;
+    }
+
     std::reverse(alignment.begin(), alignment.end());
     return alignment;
 }
 
 Alignment SisdAlignmentEngine::convex(const char* sequence,
-    std::uint32_t sequence_size, const std::unique_ptr<Graph>& graph) noexcept {
+    std::uint32_t sequence_size, const std::unique_ptr<Graph>& graph,
+    std::uint32_t* score) noexcept {
 
     std::uint32_t matrix_width = sequence_size + 1;
     std::uint32_t matrix_height = graph->nodes().size() + 1;
@@ -903,6 +915,10 @@ Alignment SisdAlignmentEngine::convex(const char* sequence,
                 }
             }
         }
+    }
+
+    if (score != nullptr) {
+      *score = max_score;
     }
 
     std::reverse(alignment.begin(), alignment.end());
