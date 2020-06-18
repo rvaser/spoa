@@ -668,7 +668,7 @@ void SimdAlignmentEngine<S>::initialize(const char* sequence,
 template<Arch S>
 Alignment SimdAlignmentEngine<S>::align(const char* sequence,
     std::uint32_t sequence_size, const std::unique_ptr<Graph>& graph,
-    std::uint32_t* score) noexcept {
+    std::int32_t* score) noexcept {
 
     if (graph->nodes().empty() || sequence_size == 0) {
         return Alignment();
@@ -712,7 +712,7 @@ template<Arch S>
 template<typename T>
 Alignment SimdAlignmentEngine<S>::linear(const char* sequence,
     std::uint32_t sequence_size, const std::unique_ptr<Graph>& graph,
-    std::uint32_t* score) noexcept {
+    std::int32_t* score) noexcept {
 
 #if defined(__AVX2__) || defined(__SSE4_1__) || defined(USE_SIMDE)
 
@@ -1065,7 +1065,7 @@ template<Arch S>
 template<typename T>
 Alignment SimdAlignmentEngine<S>::affine(const char* sequence,
     std::uint32_t sequence_size, const std::unique_ptr<Graph>& graph,
-    std::uint32_t* score) noexcept {
+    std::int32_t* score) noexcept {
 
 #if defined(__AVX2__) || defined(__SSE4_1__) || defined(USE_SIMDE)
 
@@ -1501,7 +1501,7 @@ template<Arch S>
 template<typename T>
 Alignment SimdAlignmentEngine<S>::convex(const char* sequence,
     std::uint32_t sequence_size, const std::unique_ptr<Graph>& graph,
-    std::uint32_t* score) noexcept {
+    std::int32_t* score) noexcept {
 
 #if defined(__AVX2__) || defined(__SSE4_1__) || defined(USE_SIMDE)
 

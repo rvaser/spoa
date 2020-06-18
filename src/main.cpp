@@ -114,10 +114,8 @@ int main(int argc, char** argv) {
     }
     alignment_engine->prealloc(max_sequence_size, 4);
 
-    std::uint32_t score = 0;
     for (const auto& it: sequences) {
-        auto alignment = alignment_engine->align(it->data(), graph, &score);
-        std::cerr << score << std::endl;
+        auto alignment = alignment_engine->align(it->data(), graph);
         try {
             graph->add_alignment(alignment, it->data(), it->quality());
         } catch(std::invalid_argument& exception) {

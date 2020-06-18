@@ -242,7 +242,7 @@ void SisdAlignmentEngine::initialize(const char* sequence,
 
 Alignment SisdAlignmentEngine::align(const char* sequence,
     std::uint32_t sequence_size, const std::unique_ptr<Graph>& graph,
-    std::uint32_t* score) noexcept {
+    std::int32_t* score) noexcept {
 
     if (graph->nodes().empty() || sequence_size == 0) {
         return Alignment();
@@ -260,7 +260,7 @@ Alignment SisdAlignmentEngine::align(const char* sequence,
 
 Alignment SisdAlignmentEngine::linear(const char* sequence,
     std::uint32_t sequence_size, const std::unique_ptr<Graph>& graph,
-    std::uint32_t* score) noexcept {
+    std::int32_t* score) noexcept {
 
     std::uint32_t matrix_width = sequence_size + 1;
     std::uint32_t matrix_height = graph->nodes().size() + 1;
@@ -442,7 +442,7 @@ Alignment SisdAlignmentEngine::linear(const char* sequence,
 
 Alignment SisdAlignmentEngine::affine(const char* sequence,
     std::uint32_t sequence_size, const std::unique_ptr<Graph>& graph,
-    std::uint32_t* score) noexcept {
+    std::int32_t* score) noexcept {
 
     std::uint32_t matrix_width = sequence_size + 1;
     std::uint32_t matrix_height = graph->nodes().size() + 1;
@@ -669,7 +669,7 @@ Alignment SisdAlignmentEngine::affine(const char* sequence,
 
 Alignment SisdAlignmentEngine::convex(const char* sequence,
     std::uint32_t sequence_size, const std::unique_ptr<Graph>& graph,
-    std::uint32_t* score) noexcept {
+    std::int32_t* score) noexcept {
 
     std::uint32_t matrix_width = sequence_size + 1;
     std::uint32_t matrix_height = graph->nodes().size() + 1;

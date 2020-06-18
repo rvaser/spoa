@@ -49,11 +49,11 @@ public:
 
     Alignment align(const std::string& sequence,
         const std::unique_ptr<Graph>& graph,
-        std::uint32_t* score = nullptr);
+        std::int32_t* score = nullptr);
 
     virtual Alignment align(const char* sequence, std::uint32_t sequence_size,
         const std::unique_ptr<Graph>& graph,
-        std::uint32_t* score = nullptr) noexcept = 0;
+        std::int32_t* score = nullptr) noexcept = 0;
 
 protected:
     AlignmentEngine(AlignmentType type, AlignmentSubtype subtype, std::int8_t m,

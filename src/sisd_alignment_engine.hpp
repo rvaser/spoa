@@ -31,7 +31,7 @@ public:
 
     Alignment align(const char* sequence, std::uint32_t sequence_size,
         const std::unique_ptr<Graph>& graph,
-        std::uint32_t* score) noexcept override;
+        std::int32_t* score) noexcept override;
 
     friend std::unique_ptr<AlignmentEngine> createSisdAlignmentEngine(
         AlignmentType type, AlignmentSubtype subtype, std::int8_t m,
@@ -47,15 +47,15 @@ private:
 
     Alignment linear(const char* sequence, std::uint32_t sequence_size,
         const std::unique_ptr<Graph>& graph,
-        std::uint32_t* score) noexcept;
+        std::int32_t* score) noexcept;
 
     Alignment affine(const char* sequence, std::uint32_t sequence_size,
         const std::unique_ptr<Graph>& graph,
-        std::uint32_t* score) noexcept;
+        std::int32_t* score) noexcept;
 
     Alignment convex(const char* sequence, std::uint32_t sequence_size,
         const std::unique_ptr<Graph>& graph,
-        std::uint32_t* score) noexcept;
+        std::int32_t* score) noexcept;
 
     void realloc(std::uint32_t matrix_width, std::uint32_t matrix_height,
         std::uint32_t num_codes);
