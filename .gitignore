@@ -1,2 +1,4 @@
 # Compiled Object files
 build/
+# emacs temp files
+*~

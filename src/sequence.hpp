@@ -10,6 +10,8 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include <algorithm>
+#include "dna.hpp"
 
 namespace bioparser {
     template<class T>
@@ -37,6 +39,11 @@ public:
         return quality_;
     }
 
+    void reverse_complement() {
+        dna::reverse_complement_in_place(data_);
+        std::reverse(quality_.begin(), quality_.end());
+    }
+
     friend bioparser::FastaParser<Sequence>;
     friend bioparser::FastqParser<Sequence>;
 
@@ -46,8 +53,8 @@ private:
     Sequence(const char* name, std::uint32_t name_size,
         const char* data, std::uint32_t data_size,
         const char* quality, std::uint32_t quality_size);
-    Sequence(const Sequence&) = delete;
-    const Sequence& operator=(const Sequence&) = delete;
+    //Sequence(const Sequence&) = delete;
+    //const Sequence& operator=(const Sequence&) = delete;
 
     std::string name_;
     std::string data_;
