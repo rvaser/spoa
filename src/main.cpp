@@ -18,6 +18,7 @@ static struct option options[] = {
     {"dot", required_argument, nullptr, 'd'},
     {"gfa", required_argument, nullptr, 'G'},
     {"gfa-with-consensus", no_argument, nullptr, 'C'},
+    {"try-reverse-complement", no_argument, nullptr, 'R'},
     {"version", no_argument, nullptr, 'v'},
     {"help", no_argument, nullptr, 'h'},
     {nullptr, 0, nullptr, 0}
@@ -40,9 +41,10 @@ int main(int argc, char** argv) {
     std::string dot_path = "";
     bool write_gfa = false;
     bool write_gfa_with_consensus = false;
+    bool try_reverse_complement = false;
 
     int opt;
-    while ((opt = getopt_long(argc, argv, "m:n:g:e:q:c:l:r:d:GCh", options, nullptr)) != -1) {
+    while ((opt = getopt_long(argc, argv, "m:n:g:e:q:c:l:r:d:GCRh", options, nullptr)) != -1) {
         switch (opt) {
             case 'm': m = atoi(optarg); break;
             case 'n': n = atoi(optarg); break;
@@ -55,6 +57,7 @@ int main(int argc, char** argv) {
             case 'd': dot_path = optarg; break;
             case 'G': write_gfa = true; break;
             case 'C': write_gfa = true; write_gfa_with_consensus = true; break;
+            case 'R': try_reverse_complement = true; break;
             case 'v': std::cout << version << std::endl; return 0;
             case 'h': help(); return 0;
             default: return 1;
@@ -114,13 +117,35 @@ int main(int argc, char** argv) {
     }
     alignment_engine->prealloc(max_sequence_size, 4);
 
-    for (const auto& it: sequences) {
-        auto alignment = alignment_engine->align(it->data(), graph);
-        try {
-            graph->add_alignment(alignment, it->data(), it->quality());
-        } catch(std::invalid_argument& exception) {
-            std::cerr << exception.what() << std::endl;
-            return 1;
+    if (try_reverse_complement) {
+        for (const auto& it: sequences) {
+            std::int32_t score_fwd = 0;
+            auto alignment_fwd = alignment_engine->align(it->data(), graph, &score_fwd);
+            //auto reversed = spoa::Sequence(it->name(), it->data(), it->quality());
+            auto reversed = *it;
+            reversed.reverse_complement();
+            std::int32_t score_rev = 0;
+            auto alignment_rev = alignment_engine->align(reversed.data(), graph, &score_rev);
+            try {
+                if (score_fwd >= score_rev) {
+                    graph->add_alignment(alignment_fwd, it->data(), it->quality());
+                } else {
+                    graph->add_alignment(alignment_rev, reversed.data(), reversed.quality());
+                }
+            } catch(std::invalid_argument& exception) {
+                std::cerr << exception.what() << std::endl;
+                return 1;
+            }
+        }
+    } else {
+        for (const auto& it: sequences) {
+            auto alignment = alignment_engine->align(it->data(), graph);
+            try {
+                graph->add_alignment(alignment, it->data(), it->quality());
+            } catch(std::invalid_argument& exception) {
+                std::cerr << exception.what() << std::endl;
+                return 1;
+            }
         }
     }
 
@@ -197,6 +222,9 @@ void help() {
         "            write GFA on stdout\n"
         "        -C, --gfa-with-consensus\n"
         "            write GFA with consensus on stdout\n"
+        "        -R, --try-reverse-complement\n"
+        "            try both orientations for each sequence, adding the\n"
+        "            alignment with a better score to the graph\n"
         "        -d, --dot <file>\n"
         "            output file for the final POA graph in DOT format\n"
         "        --version\n"
