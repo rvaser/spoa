@@ -39,6 +39,10 @@ public:
         return consensus_;
     }
 
+    const std::vector<std::uint32_t>& sequences_begin_nodes_ids() const {
+        return sequences_begin_nodes_ids_;
+    }
+
     std::uint32_t num_codes() const {
         return num_codes_;
     };
@@ -195,7 +199,6 @@ public:
     std::int64_t total_weight() const {
         return total_weight_;\
     }
-
     friend Graph;
     friend Node;
 
