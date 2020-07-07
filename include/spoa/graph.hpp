@@ -35,6 +35,10 @@ public:
         return rank_to_node_id_;
     }
 
+    const std::vector<std::uint32_t>& consensus() const {
+        return consensus_;
+    }
+
     std::uint32_t num_codes() const {
         return num_codes_;
     };
