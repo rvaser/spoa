@@ -192,6 +192,10 @@ public:
         return end_node_id_;
     }
 
+    std::int64_t total_weight() const {
+        return total_weight_;\
+    }
+
     friend Graph;
     friend Node;
 
