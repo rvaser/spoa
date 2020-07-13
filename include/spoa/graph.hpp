@@ -47,6 +47,10 @@ public:
         return num_codes_;
     };
 
+    std::uint32_t num_sequences() const {
+        return num_codes_;
+    };
+
     std::uint8_t coder(std::uint8_t c) const {
         return coder_[c];
     }
