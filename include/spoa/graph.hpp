@@ -95,7 +95,7 @@ public:
 
     void print_dot(const std::string& path) const;
 
-    void print_gfa(std::ostream& out, const std::vector<std::string>& sequence_names, bool include_consensus = false) const;
+    void print_gfa(std::ostream& out, const std::vector<std::string>& sequence_names, bool include_consensus = false, const std::vector<bool>& is_rev = {}) const;
 
     void clear();
 

@@ -728,7 +728,8 @@ void Graph::print_dot(const std::string& path) const {
 
 void Graph::print_gfa(std::ostream& out,
                       const std::vector<std::string>& sequence_names,
-                      bool include_consensus) const {
+                      bool include_consensus,
+                      const std::vector<bool>& is_rev) const {
 
     std::vector<std::int32_t> in_consensus(nodes_.size(), -1);
     std::int32_t rank = 0;
@@ -756,14 +757,20 @@ void Graph::print_gfa(std::ostream& out,
 
     for (std::uint32_t i = 0; i < num_sequences_; ++i) {
         out << "P" << "\t" << sequence_names[i] << "\t";
+        std::vector<uint32_t> ids;
         std::uint32_t node_id = sequences_begin_nodes_ids_[i];
         while (true) {
-            out << node_id+1 << "+";
+            ids.push_back(node_id+1);
             if (!nodes_[node_id]->successor(node_id, i)) {
                 break;
-            } else {
-                out << ",";
             }
+        }
+        bool rev_path = !is_rev.empty() && is_rev[i];
+        if (rev_path) {
+            std::reverse(ids.begin(), ids.end());
+        }
+        for (std::uint32_t j = 0; j < ids.size(); ++j) {
+            out << ids[j] << (rev_path ? "-" : "+") << (j < ids.size()-1 ? "," : "");
         }
         out << "\t" << "*" << std::endl;
     }

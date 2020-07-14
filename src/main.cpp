@@ -117,6 +117,7 @@ int main(int argc, char** argv) {
     }
     alignment_engine->prealloc(max_sequence_size, 4);
 
+    std::vector<bool> is_rev;
     if (try_reverse_complement) {
         for (const auto& it: sequences) {
             std::int32_t score_fwd = 0;
@@ -129,8 +130,10 @@ int main(int argc, char** argv) {
             try {
                 if (score_fwd >= score_rev) {
                     graph->add_alignment(alignment_fwd, it->data(), it->quality());
+                    is_rev.push_back(false);
                 } else {
                     graph->add_alignment(alignment_rev, reversed.data(), reversed.quality());
+                    is_rev.push_back(true);
                 }
             } catch(std::invalid_argument& exception) {
                 std::cerr << exception.what() << std::endl;
@@ -158,7 +161,7 @@ int main(int argc, char** argv) {
             sequence_names.push_back(s->name());
         }
         // write the graph, with consensus as a path if requested
-        graph->print_gfa(std::cout, sequence_names, write_gfa_with_consensus);
+        graph->print_gfa(std::cout, sequence_names, write_gfa_with_consensus, is_rev);
     } else if (result == 0) {
         std::string consensus = graph->generate_consensus();
         std::cout << ">Consensus LN:i:" << consensus.size() << std::endl
