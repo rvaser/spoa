@@ -106,6 +106,8 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/spoa.pc.in
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/spoa-1.pc
   DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 
+include_directories(${PROJECT_SOURCE_DIR}/vendor/cereal/include/)
+
 option(spoa_build_executable "Build spoa standalone tool" OFF)
 if (spoa_build_executable)
   if (NOT TARGET biosoup)
