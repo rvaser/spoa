@@ -1,7 +1,7 @@
 # Spoa
 
 [![Latest GitHub release](https://img.shields.io/github/release/rvaser/spoa.svg)](https://github.com/rvaser/spoa/releases/latest)
-[![Build status for gcc/clang](https://travis-ci.com/rvaser/spoa.svg?branch=master)](https://travis-ci.com/rvaser/spoa)
+![Build status for gcc/clang](https://github.com/rvaser/spoa/actions/workflows/spoa.yml/badge.svg)
 [![Published in Genome Research](https://img.shields.io/badge/published%20in-Genome%20Research-blue.svg)](https://doi.org/10.1101/gr.214270.116)
 
 Spoa (SIMD POA) is a c++ implementation of the partial order alignment (POA) algorithm (as described in 10.1093/bioinformatics/18.3.452) which is used to generate consensus sequences (as described in 10.1093/bioinformatics/btg109). It supports three alignment modes: local (Smith-Waterman), global (Needleman-Wunsch) and semi-global alignment (overlap), and three gap modes: linear, affine and convex (piecewise affine). It also supports Intel SSE4.1+ and AVX2 vectorization (marginally faster due to high latency shifts), [SIMDe](https://github.com/simd-everywhere/simde) and dispatching.
