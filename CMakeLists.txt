@@ -125,14 +125,14 @@ if (spoa_use_cereal)
 endif ()
 
 if (spoa_build_exe OR spoa_build_tests)
-  find_package(bioparser 3.0.13 QUIET)
-  find_package(biosoup 0.10.0 QUIET)
+  find_package(bioparser 3.1.0 QUIET)
+  find_package(biosoup 0.11.0 QUIET)
 
   if (NOT bioparser_FOUND)
     FetchContent_Declare(
       bioparser
       GIT_REPOSITORY https://github.com/rvaser/bioparser
-      GIT_TAG 3.0.13)
+      GIT_TAG 3.1.0)
 
     FetchContent_GetProperties(bioparser)
     if (NOT bioparser_POPULATED)
@@ -148,7 +148,7 @@ if (spoa_build_exe OR spoa_build_tests)
     FetchContent_Declare(
       biosoup
       GIT_REPOSITORY https://github.com/rvaser/biosoup
-      GIT_TAG 0.10.0)
+      GIT_TAG 0.11.0)
 
     FetchContent_GetProperties(biosoup)
     if (NOT biosoup_POPULATED)
