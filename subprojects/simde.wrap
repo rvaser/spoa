@@ -1,0 +1,9 @@
+[wrap-file]
+directory = simde-0.7.0
+
+source_url = https://github.com/simd-everywhere/simde/archive/refs/tags/v0.7.0.zip
+source_filename = simde-0.7.0.zip
+source_hash = 201e7781853902f668b9073fe58cb56d9f9df8b3a8933a80fe7b3c65711ed1ef
+
+[provide]
+simde = simde_dep

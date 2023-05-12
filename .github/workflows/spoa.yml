@@ -46,15 +46,23 @@ jobs:
           platform: x64
 
       - name: Configure CMake
-        run: cmake -B ${{ github.workspace }}/build_cmake -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+        run: |
+          cmake -B ${{ github.workspace }}/build_cmake -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+          cmake --build ${{ github.workspace }}/build_cmake
         env:
           CXX: ${{ matrix.compiler }}
 
-      - name: Build
-        run: cmake --build ${{ github.workspace }}/build_cmake --config ${{ env.BUILD_TYPE }}
+      - name: Configure Meson
+        uses: BSFishy/meson-build@v1.0.3
+        with:
+          action: build
+          directory: build_meson
+          meson-version: 0.60.0
 
       - name: Test
-        working-directory: ${{ github.workspace }}/build_cmake
+        working-directory: ${{ github.workspace }}
         run: |
-          bin/spoa --version
-          bin/spoa_test
+          build_cmake/bin/spoa --version
+          build_cmake/bin/spoa_test
+          build_meson/src/spoa --version
+          build_meson/test/spoa_test
