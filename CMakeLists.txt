@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 
+cmake_policy(SET CMP0074 NEW)
+
 project(spoa VERSION 4.0.9
              LANGUAGES CXX
              DESCRIPTION "Spoa is a c++ library (and tool) for SIMD vectorized partial order alignment.")
