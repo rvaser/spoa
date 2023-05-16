@@ -227,7 +227,7 @@ int main(int argc, char** argv) {
       case 'r': results.emplace_back(atoi(optarg)); break;
       case 'd': dot_path = optarg; break;
       case 's': is_strand_ambiguous = true; break;
-      case 'v': std::cout << VERSION << std::endl; return 0;
+      case 'v': std::cout << spoa::Version() << std::endl; return 0;
       case 'h': Help(); return 0;
       default: return 1;
     }
