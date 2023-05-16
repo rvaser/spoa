@@ -14,40 +14,47 @@ jobs:
     strategy:
       matrix:
         compiler:
+          - g++-7
           - g++
-          - g++-4.8
+          - clang++-6.0
           - clang++
-          - clang++-4.0
 
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - if: ${{ matrix.compiler == 'g++-4.8' }}
+      - if: ${{ contains(matrix.compiler, '-') }}
+        name: Get compiler version
+        id: get-compiler-version
+        run: |
+          version=$(echo ${{ matrix.compiler }} | cut -d- -f2)
+          echo "version=$version" >> $GITHUB_OUTPUT
+
+      - if: ${{ startsWith(matrix.compiler, 'g++-') }}
         name: Setup GCC
         uses: egor-tensin/setup-gcc@v1
         with:
-          version: "4.8"
+          version: "${{ steps.get-compiler-version.outputs.version }}"
           platform: x64
 
-      - if: ${{ matrix.compiler == 'clang++-4.0' }}
+      - if: ${{ startsWith(matrix.compiler, 'clang++-') }}
         name: Setup Clang
         uses: egor-tensin/setup-clang@v1
         with:
-          version: "4.0"
+          version: "${{ steps.get-compiler-version.outputs.version }}"
           platform: x64
 
       - name: Configure CMake
-        run: cmake -B ${{ github.workspace }}/build -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+        run: cmake -B ${{ github.workspace }}/build_cmake -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
         env:
           CXX: ${{ matrix.compiler }}
 
       - name: Build
-        run: cmake --build ${{ github.workspace }}/build --config ${{ env.BUILD_TYPE }}
+        run: cmake --build ${{ github.workspace }}/build_cmake --config ${{ env.BUILD_TYPE }}
 
       - name: Test
-        working-directory: ${{ github.workspace }}/build
+        working-directory: ${{ github.workspace }}/build_cmake
         run: |
           bin/spoa --version
           bin/spoa_test
