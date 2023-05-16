@@ -11,6 +11,8 @@
 
 #include "spoa/spoa.hpp"
 
+#include "spoa_test_config.h"
+
 std::atomic<std::uint32_t> biosoup::Sequence::num_objects{0};
 
 namespace spoa {
@@ -27,7 +29,7 @@ class SpoaTest: public ::testing::Test {
       std::int8_t q,
       std::int8_t c,
       bool quality) {
-    auto p = bioparser::Parser<biosoup::Sequence>::Create<bioparser::FastqParser>(TEST_DATA);  // NOLINT
+    auto p = bioparser::Parser<biosoup::Sequence>::Create<bioparser::FastqParser>(SPOA_TEST_DATA);  // NOLINT
     s = p->Parse(-1);
     EXPECT_EQ(55, s.size());
 

@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "spoa/alignment_engine.hpp"
-#include "spoa/architectures.hpp"
+#include "architectures.hpp"
 
 namespace spoa {
 

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.12)
 
-project(spoa VERSION 4.0.9
+project(spoa VERSION 4.1.0
              LANGUAGES CXX
              DESCRIPTION "Spoa is a c++ library (and tool) for SIMD vectorized partial order alignment.")
 
@@ -181,15 +181,20 @@ if (spoa_build_tests)
   endif ()
 endif ()
 
+set(SPOA_VERSION "${PROJECT_VERSION}")
+configure_file(src/spoa_config.h.in spoa_config.h)
+
 add_library(spoa
   src/alignment_engine.cpp
   src/graph.cpp
   src/simd_alignment_engine_dispatcher.cpp
-  src/sisd_alignment_engine.cpp)
+  src/sisd_alignment_engine.cpp
+  src/version.cpp)
 add_library(spoa::spoa ALIAS spoa)
 
 target_include_directories(spoa PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
   $<BUILD_INTERFACE:${simde_SOURCE_DIR}>
   $<INSTALL_INTERFACE:include>)
 
@@ -267,13 +272,15 @@ if (spoa_build_exe)
     bioparser::bioparser
     biosoup::biosoup)
 
-  target_compile_definitions(spoa_exe PRIVATE VERSION="${PROJECT_VERSION}")
   set_property(TARGET spoa_exe PROPERTY OUTPUT_NAME spoa)
 
   install(TARGETS spoa_exe DESTINATION ${CMAKE_INSTALL_BINDIR})
 endif ()
 
 if (spoa_build_tests)
+  set(SPOA_TEST_DATA "${PROJECT_SOURCE_DIR}/test/data/sample.fastq.gz")
+  configure_file(test/spoa_test_config.h.in spoa_test_config.h)
+
   add_executable(spoa_test
     test/spoa_test.cpp)
 
@@ -283,6 +290,6 @@ if (spoa_build_tests)
     biosoup::biosoup
     GTest::Main)
 
-  target_compile_definitions(spoa_test
-    PRIVATE TEST_DATA="${PROJECT_SOURCE_DIR}/test/data/sample.fastq.gz")
+  target_include_directories(spoa_test PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
 endif ()

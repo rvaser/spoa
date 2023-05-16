@@ -5,5 +5,6 @@
 
 #include "graph.hpp"
 #include "alignment_engine.hpp"
+#include "version.hpp"
 
 #endif  // SPOA_SPOA_HPP_
