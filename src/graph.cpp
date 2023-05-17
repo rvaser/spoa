@@ -374,6 +374,17 @@ std::string Graph::GenerateConsensus() {
   return dst;
 }
 
+std::string Graph::GenerateConsensus(std::int32_t min_coverage) {
+  TraverseHeaviestBundle();
+  std::string dst{};
+  for (const auto& it : consensus_) {
+    if (static_cast<std::int32_t>(it->Coverage()) >= min_coverage) {
+      dst += decoder_[it->code];
+    }
+  }
+  return dst;
+}
+
 std::string Graph::GenerateConsensus(
     std::vector<std::uint32_t>* summary,
     bool verbose) {

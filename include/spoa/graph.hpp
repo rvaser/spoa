@@ -166,6 +166,8 @@ class Graph {
 
   std::string GenerateConsensus();
 
+  std::string GenerateConsensus(std::int32_t min_coverage);
+
   std::string GenerateConsensus(
       std::vector<std::uint32_t>* summary,
       bool verbose = false);
