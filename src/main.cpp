@@ -15,6 +15,7 @@ namespace {
 static struct option options[] = {
   {"algorithm", required_argument, nullptr, 'l'},
   {"result", required_argument, nullptr, 'r'},
+  {"min-coverage", required_argument, nullptr, 'M'},
   {"dot", required_argument, nullptr, 'd'},
   {"strand-ambiguous", no_argument, nullptr, 's'},
   {"version", no_argument, nullptr, 'v'},
@@ -101,6 +102,9 @@ void Help() {
       "        2 - 0 & 1 (FASTA)\n"
       "        3 - partial order graph (GFA)\n"
       "        4 - 0 & 3 (GFA)\n"
+      "    --min-coverage <int>\n"
+      "      default: -1\n"
+      "      minimal consensus coverage (usable only with -r 0)\n"
       "    -d, --dot <file>\n"
       "      output file for the partial order graph in DOT format\n"
       "    -s, --strand-ambiguous\n"
@@ -208,6 +212,8 @@ int main(int argc, char** argv) {
   std::int8_t q = -10;
   std::int8_t c = -4;
 
+  std::int32_t min_coverage = -1;
+
   std::uint8_t algorithm = 0;
   std::vector<std::uint8_t> results = { 0 };
   std::string dot_path{};
@@ -223,6 +229,7 @@ int main(int argc, char** argv) {
       case 'e': e = atoi(optarg); break;
       case 'q': q = atoi(optarg); break;
       case 'c': c = atoi(optarg); break;
+      case 'M': min_coverage = atoi(optarg); break;
       case 'l': algorithm = atoi(optarg); break;
       case 'r': results.emplace_back(atoi(optarg)); break;
       case 'd': dot_path = optarg; break;
@@ -316,7 +323,7 @@ int main(int argc, char** argv) {
   for (const auto& it : results) {
     switch (it) {
       case 0: {
-        auto consensus = graph.GenerateConsensus();
+        auto consensus = graph.GenerateConsensus(min_coverage);
         std::cout << ">Consensus LN:i:" << consensus.size() << std::endl
                   << consensus << std::endl;
         break;
