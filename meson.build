@@ -15,7 +15,7 @@ project(
 # Dependencies #
 ################
 
-spoa_lib_flags = []
+spoa_lib_flags = ['-faligned-new']
 spoa_lib_deps = []
 
 if get_option('cereal')
