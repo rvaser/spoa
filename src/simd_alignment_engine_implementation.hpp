@@ -320,46 +320,54 @@ struct SimdAlignmentEngine<A>::Implementation {
 #if defined(__AVX2__) || defined(__SSE4_1__) || defined(SPOA_USE_SIMDE)
   std::vector<std::uint32_t> node_id_to_rank;
 
-  std::unique_ptr<__mxxxi[]> sequence_profile_storage;
   std::uint64_t sequence_profile_size;
+  __mxxxi* sequence_profile_storage;
   __mxxxi* sequence_profile;
 
   std::vector<std::int32_t> first_column;
-  std::unique_ptr<__mxxxi[]> M_storage;
+
   std::uint64_t M_size;
+  __mxxxi* M_storage;
   __mxxxi* H;
   __mxxxi* F;
   __mxxxi* E;
   __mxxxi* O;
   __mxxxi* Q;
 
-  std::unique_ptr<__mxxxi[]> masks_storage;
   std::uint32_t masks_size;
+  __mxxxi* masks_storage;
   __mxxxi* masks;
 
-  std::unique_ptr<__mxxxi[]> penalties_storage;
   std::uint32_t penalties_size;
+  __mxxxi* penalties_storage;
   __mxxxi* penalties;
 
   Implementation()
       : node_id_to_rank(),
-        sequence_profile_storage(nullptr),
         sequence_profile_size(0),
+        sequence_profile_storage(nullptr),
         sequence_profile(nullptr),
         first_column(),
-        M_storage(nullptr),
         M_size(0),
+        M_storage(nullptr),
         H(nullptr),
         F(nullptr),
         E(nullptr),
         O(nullptr),
         Q(nullptr),
-        masks_storage(nullptr),
         masks_size(0),
+        masks_storage(nullptr),
         masks(nullptr),
-        penalties_storage(nullptr),
         penalties_size(0),
+        penalties_storage(nullptr),
         penalties(nullptr) {
+  }
+
+  ~Implementation() {
+    delete[] sequence_profile_storage;
+    delete[] M_storage;
+    delete[] masks_storage;
+    delete[] penalties_storage;
   }
 #endif
 };
@@ -431,83 +439,71 @@ void SimdAlignmentEngine<A>::Realloc(
     pimpl_->node_id_to_rank.resize(matrix_height - 1, 0);
   }
   if (pimpl_->sequence_profile_size < num_codes * matrix_width) {
-    __mxxxi* storage = nullptr;
     pimpl_->sequence_profile_size = num_codes * matrix_width;
+    delete[] pimpl_->sequence_profile_storage;
     pimpl_->sequence_profile = AllocateAlignedMemory<A>(
-        &storage,
+        &pimpl_->sequence_profile_storage,
         pimpl_->sequence_profile_size,
         kRegisterSize / 8);
-    pimpl_->sequence_profile_storage.reset();
-    pimpl_->sequence_profile_storage = std::unique_ptr<__mxxxi[]>(storage);
   }
   if (subtype_ == AlignmentSubtype::kLinear) {
     if (pimpl_->first_column.size() < matrix_height) {
       pimpl_->first_column.resize(matrix_height, 0);
     }
     if (pimpl_->M_size < matrix_height * matrix_width) {
-      __mxxxi* storage = nullptr;
       pimpl_->M_size = matrix_height * matrix_width;
+      delete[] pimpl_->M_storage;
       pimpl_->H = AllocateAlignedMemory<A>(
-        &storage,
+        &pimpl_->M_storage,
         pimpl_->M_size,
         kRegisterSize / 8);
-      pimpl_->M_storage.reset();
-      pimpl_->M_storage = std::unique_ptr<__mxxxi[]>(storage);
     }
   } else if (subtype_ == AlignmentSubtype::kAffine) {
     if (pimpl_->first_column.size() < 2 * matrix_height) {
       pimpl_->first_column.resize(2 * matrix_height, 0);
     }
     if (pimpl_->M_size < 3 * matrix_height * matrix_width) {
-      __mxxxi* storage = nullptr;
       pimpl_->M_size = 3 * matrix_height * matrix_width;
+      delete[] pimpl_->M_storage;
       pimpl_->H = AllocateAlignedMemory<A>(
-        &storage,
+        &pimpl_->M_storage,
         pimpl_->M_size,
         kRegisterSize / 8);
       pimpl_->F = pimpl_->H + matrix_height * matrix_width;
       pimpl_->E = pimpl_->F + matrix_height * matrix_width;
-      pimpl_->M_storage.reset();
-      pimpl_->M_storage = std::unique_ptr<__mxxxi[]>(storage);
     }
   } else if (subtype_ == AlignmentSubtype::kConvex) {
     if (pimpl_->first_column.size() < 3 * matrix_height) {
       pimpl_->first_column.resize(3 * matrix_height, 0);
     }
     if (pimpl_->M_size < 5 * matrix_height * matrix_width) {
-      __mxxxi* storage = nullptr;
       pimpl_->M_size = 5 * matrix_height * matrix_width;
+      delete[] pimpl_->M_storage;
       pimpl_->H = AllocateAlignedMemory<A>(
-          &storage,
+          &pimpl_->M_storage,
           pimpl_->M_size,
           kRegisterSize / 8);
       pimpl_->F = pimpl_->H + matrix_height * matrix_width;
       pimpl_->E = pimpl_->F + matrix_height * matrix_width;
       pimpl_->O = pimpl_->E + matrix_height * matrix_width;
       pimpl_->Q = pimpl_->O + matrix_height * matrix_width;
-      pimpl_->M_storage.reset();
-      pimpl_->M_storage = std::unique_ptr<__mxxxi[]>(storage);
     }
   }
   if (pimpl_->masks_size < InstructionSet<A, std::int16_t>::kLogNumVar + 1) {
-    __mxxxi* storage = nullptr;
     pimpl_->masks_size = InstructionSet<A, std::int16_t>::kLogNumVar + 1;
+    delete[] pimpl_->masks_storage;
     pimpl_->masks = AllocateAlignedMemory<A>(
-        &storage,
+        &pimpl_->masks_storage,
         pimpl_->masks_size,
         kRegisterSize / 8);
-    pimpl_->masks_storage.reset();
-    pimpl_->masks_storage = std::unique_ptr<__mxxxi[]>(storage);
   }
   if (pimpl_->penalties_size < 2 * InstructionSet<A, std::int16_t>::kLogNumVar) {  // NOLINT
-    __mxxxi* storage = nullptr;
     pimpl_->penalties_size = 2 * InstructionSet<A, std::int16_t>::kLogNumVar;
+    delete[] pimpl_->penalties_storage;
     pimpl_->penalties = AllocateAlignedMemory<A>(
-        &storage,
+        &pimpl_->penalties_storage,
         pimpl_->penalties_size,
         kRegisterSize / 8);
-    pimpl_->penalties_storage.reset();
-    pimpl_->penalties_storage = std::unique_ptr<__mxxxi[]>(storage);
   }
 #endif
   (void) matrix_width;
