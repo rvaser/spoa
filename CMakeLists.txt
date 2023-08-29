@@ -55,7 +55,7 @@ if (spoa_use_simde OR
   FetchContent_Declare(
     simde
     GIT_REPOSITORY https://github.com/simd-everywhere/simde
-    GIT_TAG v0.7.0)
+    GIT_TAG v0.7.6)
 
   FetchContent_GetProperties(simde)
   if (NOT simde_POPULATED)

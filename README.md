@@ -16,7 +16,7 @@ Spoa (SIMD POA) is a c++ implementation of the partial order alignment (POA) alg
 #### Hidden
 
 - \[optional\] USCiLab/cereal 1.3.0
-- \[optional\] simd-everywhere/simde 0.7.0
+- \[optional\] simd-everywhere/simde 0.7.6
 - \[optional\] google/cpu_features 0.6.0
 - (spoa_exe)(spoa_test) rvaser/bioparser 3.1.0
 - (spoa_exe)(spoa_test) rvaser/biosoup 0.11.0
