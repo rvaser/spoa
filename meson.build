@@ -47,7 +47,7 @@ if (get_option('simde') or
     get_option('simde_openmp') or
     get_option('dispatch'))
   # simde
-  spoa_simde_dep = dependency('simde', version : '>= 0.7.0', fallback : ['simde', 'simde_dep'])
+  spoa_simde_dep = dependency('simde', version : '>= 0.7.6', fallback : ['simde', 'simde_dep'])
 
   add_project_arguments('-DSIMDE_ENABLE_NATIVE_ALIASES', language : ['c', 'cpp'])
   spoa_lib_flags += '-DSPOA_USE_SIMDE'
