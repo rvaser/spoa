@@ -20,7 +20,7 @@ namespace test {
 
 class SpoaTest: public ::testing::Test {
  public:
-  void Setup(
+  void Initialize(
       AlignmentType type,
       std::int8_t m,
       std::int8_t n,
@@ -121,7 +121,7 @@ TEST(SpoaAlignmentTest, LargeInput) {
 }
 
 TEST_F(SpoaTest, Clear) {
-  Setup(AlignmentType::kSW, 5, -4, -8, -8, -8, -8, false);
+  Initialize(AlignmentType::kSW, 5, -4, -8, -8, -8, -8, false);
   Align();
   auto c = gr.GenerateConsensus();
 
@@ -132,7 +132,7 @@ TEST_F(SpoaTest, Clear) {
 
 #ifdef SPOA_USE_CEREAL
 TEST_F(SpoaTest, Archive) {
-  Setup(AlignmentType::kNW, 2, -5, -2, -2, -2, -2, true);
+  Initialize(AlignmentType::kNW, 2, -5, -2, -2, -2, -2, true);
 
   {
     std::ofstream os("spoa.test.cereal");
@@ -154,7 +154,7 @@ TEST_F(SpoaTest, Archive) {
 #endif
 
 TEST_F(SpoaTest, Local) {
-  Setup(AlignmentType::kSW, 5, -4, -8, -8, -8, -8, false);
+  Initialize(AlignmentType::kSW, 5, -4, -8, -8, -8, -8, false);
   Align();
 
   std::string c =
@@ -170,7 +170,7 @@ TEST_F(SpoaTest, Local) {
 }
 
 TEST_F(SpoaTest, LocalAffine) {
-  Setup(AlignmentType::kSW, 5, -4, -8, -6, -8, -6, false);
+  Initialize(AlignmentType::kSW, 5, -4, -8, -6, -8, -6, false);
   Align();
 
   std::string c =
@@ -186,7 +186,7 @@ TEST_F(SpoaTest, LocalAffine) {
 }
 
 TEST_F(SpoaTest, LocalConvex) {
-  Setup(AlignmentType::kSW, 5, -4, -8, -6, -10, -2, false);
+  Initialize(AlignmentType::kSW, 5, -4, -8, -6, -10, -2, false);
   Align();
 
   std::string c =
@@ -202,7 +202,7 @@ TEST_F(SpoaTest, LocalConvex) {
 }
 
 TEST_F(SpoaTest, LocalWithQualities) {
-  Setup(AlignmentType::kSW, 5, -4, -8, -8, -8, -8, true);
+  Initialize(AlignmentType::kSW, 5, -4, -8, -8, -8, -8, true);
   Align();
 
   std::string c =
@@ -218,7 +218,7 @@ TEST_F(SpoaTest, LocalWithQualities) {
 }
 
 TEST_F(SpoaTest, LocalAffineWithQualities) {
-  Setup(AlignmentType::kSW, 5, -4, -8, -6, -8, -6, true);
+  Initialize(AlignmentType::kSW, 5, -4, -8, -6, -8, -6, true);
   Align();
 
   std::string c =
@@ -234,7 +234,7 @@ TEST_F(SpoaTest, LocalAffineWithQualities) {
 }
 
 TEST_F(SpoaTest, LocalConvexWithQualities) {
-  Setup(AlignmentType::kSW, 5, -4, -8, -6, -10, -2, true);
+  Initialize(AlignmentType::kSW, 5, -4, -8, -6, -10, -2, true);
   Align();
 
   std::string c =
@@ -250,7 +250,7 @@ TEST_F(SpoaTest, LocalConvexWithQualities) {
 }
 
 TEST_F(SpoaTest, Global) {
-  Setup(AlignmentType::kNW, 5, -4, -8, -8, -8, -8, false);
+  Initialize(AlignmentType::kNW, 5, -4, -8, -8, -8, -8, false);
   Align();
 
   std::string c =
@@ -266,7 +266,7 @@ TEST_F(SpoaTest, Global) {
 }
 
 TEST_F(SpoaTest, GlobalAffine) {
-  Setup(AlignmentType::kNW, 5, -4, -8, -6, -8, -6, false);
+  Initialize(AlignmentType::kNW, 5, -4, -8, -6, -8, -6, false);
   Align();
 
   std::string c =
@@ -282,7 +282,7 @@ TEST_F(SpoaTest, GlobalAffine) {
 }
 
 TEST_F(SpoaTest, GlobalConvex) {
-  Setup(AlignmentType::kNW, 5, -4, -8, -6, -10, -2, false);
+  Initialize(AlignmentType::kNW, 5, -4, -8, -6, -10, -2, false);
   Align();
 
   std::string c =
@@ -298,7 +298,7 @@ TEST_F(SpoaTest, GlobalConvex) {
 }
 
 TEST_F(SpoaTest, GlobalWithQualities) {
-  Setup(AlignmentType::kNW, 5, -4, -8, -8, -8, -8, true);
+  Initialize(AlignmentType::kNW, 5, -4, -8, -8, -8, -8, true);
   Align();
 
   std::string c =
@@ -314,7 +314,7 @@ TEST_F(SpoaTest, GlobalWithQualities) {
 }
 
 TEST_F(SpoaTest, GlobalAffineWithQualities) {
-  Setup(AlignmentType::kNW, 5, -4, -8, -6, -8, -6, true);
+  Initialize(AlignmentType::kNW, 5, -4, -8, -6, -8, -6, true);
   Align();
 
   std::string c =
@@ -330,7 +330,7 @@ TEST_F(SpoaTest, GlobalAffineWithQualities) {
 }
 
 TEST_F(SpoaTest, GlobalConvexWithQualities) {
-  Setup(AlignmentType::kNW, 5, -4, -8, -6, -10, -2, true);
+  Initialize(AlignmentType::kNW, 5, -4, -8, -6, -10, -2, true);
   Align();
 
   std::string c =
@@ -346,7 +346,7 @@ TEST_F(SpoaTest, GlobalConvexWithQualities) {
 }
 
 TEST_F(SpoaTest, SemiGlobal) {
-  Setup(AlignmentType::kOV, 5, -4, -8, -8, -8, -8, false);
+  Initialize(AlignmentType::kOV, 5, -4, -8, -8, -8, -8, false);
   Align();
 
   std::string c =
@@ -362,7 +362,7 @@ TEST_F(SpoaTest, SemiGlobal) {
 }
 
 TEST_F(SpoaTest, SemiGlobalAffine) {
-  Setup(AlignmentType::kOV, 5, -4, -8, -6, -8, -6, false);
+  Initialize(AlignmentType::kOV, 5, -4, -8, -6, -8, -6, false);
   Align();
 
   std::string c =
@@ -378,7 +378,7 @@ TEST_F(SpoaTest, SemiGlobalAffine) {
 }
 
 TEST_F(SpoaTest, SemiGlobalConvex) {
-  Setup(AlignmentType::kOV, 5, -4, -8, -6, -10, -2, false);
+  Initialize(AlignmentType::kOV, 5, -4, -8, -6, -10, -2, false);
   Align();
 
   std::string c =
@@ -394,7 +394,7 @@ TEST_F(SpoaTest, SemiGlobalConvex) {
 }
 
 TEST_F(SpoaTest, SemiGlobalWithQualities) {
-  Setup(AlignmentType::kOV, 5, -4, -8, -8, -8, -8, true);
+  Initialize(AlignmentType::kOV, 5, -4, -8, -8, -8, -8, true);
   Align();
 
   std::string c =
@@ -410,7 +410,7 @@ TEST_F(SpoaTest, SemiGlobalWithQualities) {
 }
 
 TEST_F(SpoaTest, SemiGlobalAffineWithQualities) {
-  Setup(AlignmentType::kOV, 5, -4, -8, -6, -8, -6, true);
+  Initialize(AlignmentType::kOV, 5, -4, -8, -6, -8, -6, true);
   Align();
 
   std::string c =
@@ -426,7 +426,7 @@ TEST_F(SpoaTest, SemiGlobalAffineWithQualities) {
 }
 
 TEST_F(SpoaTest, SemiGlobalConvexWithQualities) {
-  Setup(AlignmentType::kOV, 5, -4, -8, -6, -10, -2, true);
+  Initialize(AlignmentType::kOV, 5, -4, -8, -6, -10, -2, true);
   Align();
 
   std::string c =
