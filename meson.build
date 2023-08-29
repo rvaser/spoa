@@ -34,6 +34,14 @@ if (not meson.is_subproject())
   spoa_bioparser_dep = dependency('bioparser', version : '>= 3.1.0', fallback : ['bioparser', 'bioparser_dep'])
 endif
 
+if not get_option('dispatch')
+  if get_option('sse41')
+    spoa_lib_flags += '-msse4.1'
+  elif get_option('avx2')
+    spoa_lib_flags += '-mavx2'
+  endif
+endif
+
 if (get_option('simde') or
     get_option('simde_nonvec') or
     get_option('simde_openmp') or
@@ -56,12 +64,6 @@ if (get_option('simde') or
 
   if get_option('dispatch')
     spoa_lib_flags += '-DSPOA_GENERATE_DISPATCH_CPUIDEX'
-  endif
-else
-  if get_option('sse41')
-    spoa_lib_flags += '-msse4.1'
-  elif get_option('avx2')
-    spoa_lib_flags += '-mavx2'
   endif
 endif
 
