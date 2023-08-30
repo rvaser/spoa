@@ -1,11 +1,11 @@
 project(
   'spoa',
   ['cpp'],
-  version : '4.1.1',
+  version : '4.1.2',
   default_options : [
     'buildtype=release',
     'warning_level=3',
-    'cpp_std=c++11',
+    'cpp_std=c++17',
     'b_ndebug=if-release'],
   license : 'MIT',
   meson_version : '>=0.60.0'
@@ -15,7 +15,7 @@ project(
 # Dependencies #
 ################
 
-spoa_lib_flags = ['-faligned-new']
+spoa_lib_flags = []
 spoa_lib_deps = []
 
 if get_option('cereal')

@@ -29,34 +29,6 @@ extern "C" {
 
 namespace spoa {
 
-// Taken from https://gcc.gnu.org/viewcvs/gcc?view=revision&revision=216149
-inline void* align(
-    std::size_t __align,
-    std::size_t __size,
-    void*& __ptr,  // NOLINT
-    std::size_t& __space) noexcept {  // NOLINT
-  const auto __intptr = reinterpret_cast<uintptr_t>(__ptr);
-  const auto __aligned = (__intptr - 1u + __align) & -__align;
-  const auto __diff = __aligned - __intptr;
-  if ((__size + __diff) > __space) {
-    return nullptr;
-  } else {
-    __space -= __diff;
-    return __ptr = reinterpret_cast<void*>(__aligned);
-  }
-}
-
-template<Architecture A, typename T>
-T* AllocateAlignedMemory(
-    T** storage,
-    std::size_t size,
-    std::size_t alignment) {
-  *storage = new T[size + alignment - 1];
-  void* ptr = static_cast<void*>(*storage);
-  std::size_t storage_size = (size + alignment - 1) * sizeof(T);
-  return static_cast<T*>(align(alignment, size * sizeof(T), ptr, storage_size));
-}
-
 template<Architecture A, typename T>
 struct InstructionSet;
 
@@ -88,6 +60,9 @@ template<Architecture A>
 struct InstructionSet<A, std::int16_t> {
   using type = std::int16_t;
   static constexpr std::uint32_t kNumVar = kRegisterSize / (8 * sizeof(type));
+  struct alignas(kRegisterSize / 8) Storage {
+    type arr[kNumVar];
+  };
   static constexpr std::uint32_t kLogNumVar = 4;
   static constexpr std::uint32_t kLSS = 2;   // Left Shift Size
   static constexpr std::uint32_t kRSS = 30;  // Right Shift Size
@@ -121,6 +96,9 @@ template<Architecture A>
 struct InstructionSet<A, std::int32_t> {
   using type = std::int32_t;
   static constexpr std::uint32_t kNumVar = kRegisterSize / (8 * sizeof(type));
+  struct alignas(kRegisterSize / 8) Storage {
+    type arr[kNumVar];
+  };
   static constexpr std::uint32_t kLogNumVar = 3;
   static constexpr std::uint32_t kLSS = 4;
   static constexpr std::uint32_t kRSS = 28;
@@ -176,6 +154,9 @@ template<Architecture A>
 struct InstructionSet<A, std::int16_t> {
   using type = std::int16_t;
   static constexpr std::uint32_t kNumVar = kRegisterSize / (8 * sizeof(type));
+  struct alignas(kRegisterSize / 8) Storage {
+    type arr[kNumVar];
+  };
   static constexpr std::uint32_t kLogNumVar = 3;
   static constexpr std::uint32_t kLSS = 2;
   static constexpr std::uint32_t kRSS = 14;
@@ -208,6 +189,9 @@ template<Architecture A>
 struct InstructionSet<A, std::int32_t> {
   using type = std::int32_t;
   static constexpr std::uint32_t kNumVar = kRegisterSize / (8 * sizeof(type));
+  struct alignas(kRegisterSize / 8) Storage {
+    type arr[kNumVar];
+  };
   static constexpr std::uint32_t kLogNumVar = 2;
   static constexpr std::uint32_t kLSS = 4;
   static constexpr std::uint32_t kRSS = 12;
@@ -238,6 +222,10 @@ struct InstructionSet<A, std::int32_t> {
 #endif
 
 #if defined(__AVX2__) || defined(__SSE4_1__) || defined(SPOA_USE_SIMDE)
+
+struct Storage {
+  __mxxxi val;
+};
 
 template<Architecture A, typename T>
 void _mmxxx_print(const __mxxxi& a) {
@@ -320,54 +308,39 @@ struct SimdAlignmentEngine<A>::Implementation {
 #if defined(__AVX2__) || defined(__SSE4_1__) || defined(SPOA_USE_SIMDE)
   std::vector<std::uint32_t> node_id_to_rank;
 
-  std::uint64_t sequence_profile_size;
-  __mxxxi* sequence_profile_storage;
+  std::vector<Storage> sequence_profile_storage;
   __mxxxi* sequence_profile;
 
   std::vector<std::int32_t> first_column;
 
-  std::uint64_t M_size;
-  __mxxxi* M_storage;
+  std::vector<Storage> M_storage;
   __mxxxi* H;
   __mxxxi* F;
   __mxxxi* E;
   __mxxxi* O;
   __mxxxi* Q;
 
-  std::uint32_t masks_size;
-  __mxxxi* masks_storage;
+  std::vector<Storage> masks_storage;
   __mxxxi* masks;
 
-  std::uint32_t penalties_size;
-  __mxxxi* penalties_storage;
+  std::vector<Storage> penalties_storage;
   __mxxxi* penalties;
 
   Implementation()
       : node_id_to_rank(),
-        sequence_profile_size(0),
-        sequence_profile_storage(nullptr),
+        sequence_profile_storage(),
         sequence_profile(nullptr),
         first_column(),
-        M_size(0),
-        M_storage(nullptr),
+        M_storage(),
         H(nullptr),
         F(nullptr),
         E(nullptr),
         O(nullptr),
         Q(nullptr),
-        masks_size(0),
-        masks_storage(nullptr),
+        masks_storage(),
         masks(nullptr),
-        penalties_size(0),
-        penalties_storage(nullptr),
+        penalties_storage(),
         penalties(nullptr) {
-  }
-
-  ~Implementation() {
-    delete[] sequence_profile_storage;
-    delete[] M_storage;
-    delete[] masks_storage;
-    delete[] penalties_storage;
   }
 #endif
 };
@@ -438,37 +411,25 @@ void SimdAlignmentEngine<A>::Realloc(
   if (pimpl_->node_id_to_rank.size() < matrix_height - 1) {
     pimpl_->node_id_to_rank.resize(matrix_height - 1, 0);
   }
-  if (pimpl_->sequence_profile_size < num_codes * matrix_width) {
-    pimpl_->sequence_profile_size = num_codes * matrix_width;
-    delete[] pimpl_->sequence_profile_storage;
-    pimpl_->sequence_profile = AllocateAlignedMemory<A>(
-        &pimpl_->sequence_profile_storage,
-        pimpl_->sequence_profile_size,
-        kRegisterSize / 8);
+  if (pimpl_->sequence_profile_storage.size() < num_codes * matrix_width) {
+    pimpl_->sequence_profile_storage.resize(num_codes * matrix_width);
+    pimpl_->sequence_profile = reinterpret_cast<__mxxxi*>(pimpl_->sequence_profile_storage.data());
   }
   if (subtype_ == AlignmentSubtype::kLinear) {
     if (pimpl_->first_column.size() < matrix_height) {
       pimpl_->first_column.resize(matrix_height, 0);
     }
-    if (pimpl_->M_size < matrix_height * matrix_width) {
-      pimpl_->M_size = matrix_height * matrix_width;
-      delete[] pimpl_->M_storage;
-      pimpl_->H = AllocateAlignedMemory<A>(
-        &pimpl_->M_storage,
-        pimpl_->M_size,
-        kRegisterSize / 8);
+    if (pimpl_->M_storage.size() < matrix_height * matrix_width) {
+      pimpl_->M_storage.resize(matrix_height * matrix_width);
+      pimpl_->H = reinterpret_cast<__mxxxi*>(pimpl_->M_storage.data());
     }
   } else if (subtype_ == AlignmentSubtype::kAffine) {
     if (pimpl_->first_column.size() < 2 * matrix_height) {
       pimpl_->first_column.resize(2 * matrix_height, 0);
     }
-    if (pimpl_->M_size < 3 * matrix_height * matrix_width) {
-      pimpl_->M_size = 3 * matrix_height * matrix_width;
-      delete[] pimpl_->M_storage;
-      pimpl_->H = AllocateAlignedMemory<A>(
-        &pimpl_->M_storage,
-        pimpl_->M_size,
-        kRegisterSize / 8);
+    if (pimpl_->M_storage.size() < 3 * matrix_height * matrix_width) {
+      pimpl_->M_storage.resize(3 * matrix_height * matrix_width);
+      pimpl_->H = reinterpret_cast<__mxxxi*>(pimpl_->M_storage.data());
       pimpl_->F = pimpl_->H + matrix_height * matrix_width;
       pimpl_->E = pimpl_->F + matrix_height * matrix_width;
     }
@@ -476,34 +437,22 @@ void SimdAlignmentEngine<A>::Realloc(
     if (pimpl_->first_column.size() < 3 * matrix_height) {
       pimpl_->first_column.resize(3 * matrix_height, 0);
     }
-    if (pimpl_->M_size < 5 * matrix_height * matrix_width) {
-      pimpl_->M_size = 5 * matrix_height * matrix_width;
-      delete[] pimpl_->M_storage;
-      pimpl_->H = AllocateAlignedMemory<A>(
-          &pimpl_->M_storage,
-          pimpl_->M_size,
-          kRegisterSize / 8);
+    if (pimpl_->M_storage.size() < 5 * matrix_height * matrix_width) {
+      pimpl_->M_storage.resize(5 * matrix_height * matrix_width);
+      pimpl_->H = reinterpret_cast<__mxxxi*>(pimpl_->M_storage.data());
       pimpl_->F = pimpl_->H + matrix_height * matrix_width;
       pimpl_->E = pimpl_->F + matrix_height * matrix_width;
       pimpl_->O = pimpl_->E + matrix_height * matrix_width;
       pimpl_->Q = pimpl_->O + matrix_height * matrix_width;
     }
   }
-  if (pimpl_->masks_size < InstructionSet<A, std::int16_t>::kLogNumVar + 1) {
-    pimpl_->masks_size = InstructionSet<A, std::int16_t>::kLogNumVar + 1;
-    delete[] pimpl_->masks_storage;
-    pimpl_->masks = AllocateAlignedMemory<A>(
-        &pimpl_->masks_storage,
-        pimpl_->masks_size,
-        kRegisterSize / 8);
+  if (pimpl_->masks_storage.size() < InstructionSet<A, std::int16_t>::kLogNumVar + 1) {
+    pimpl_->masks_storage.resize(InstructionSet<A, std::int16_t>::kLogNumVar + 1);
+    pimpl_->masks = reinterpret_cast<__mxxxi*>(pimpl_->masks_storage.data());
   }
-  if (pimpl_->penalties_size < 2 * InstructionSet<A, std::int16_t>::kLogNumVar) {  // NOLINT
-    pimpl_->penalties_size = 2 * InstructionSet<A, std::int16_t>::kLogNumVar;
-    delete[] pimpl_->penalties_storage;
-    pimpl_->penalties = AllocateAlignedMemory<A>(
-        &pimpl_->penalties_storage,
-        pimpl_->penalties_size,
-        kRegisterSize / 8);
+  if (pimpl_->penalties_storage.size() < 2 * InstructionSet<A, std::int16_t>::kLogNumVar) {  // NOLINT
+    pimpl_->penalties_storage.resize(2 * InstructionSet<A, std::int16_t>::kLogNumVar);
+    pimpl_->penalties = reinterpret_cast<__mxxxi*>(pimpl_->penalties_storage.data());
   }
 #endif
   (void) matrix_width;
@@ -956,11 +905,8 @@ Alignment SimdAlignmentEngine<A>::Linear(
         static_cast<std::uint32_t>(rank_to_node[i]->inedges.size()));
   }
 
-  typename T::type* backtrack_storage = nullptr;
-  typename T::type* H = AllocateAlignedMemory<A>(
-      &backtrack_storage,
-      3 * T::kNumVar + 2 * T::kNumVar * max_num_predecessors,
-      kRegisterSize / 8);
+  std::vector<typename T::Storage> backtrack_storage(3 * T::kNumVar + 2 * T::kNumVar * max_num_predecessors);
+  typename T::type* H = reinterpret_cast<typename T::type*>(backtrack_storage.data());
   typename T::type* H_pred = H + T::kNumVar;
   typename T::type* H_diag_pred = H_pred + T::kNumVar * max_num_predecessors;
   typename T::type* H_left_pred = H_diag_pred + T::kNumVar * max_num_predecessors;  // NOLINT
@@ -1092,8 +1038,6 @@ Alignment SimdAlignmentEngine<A>::Linear(
     j_div = j / T::kNumVar;
     j_mod = j % T::kNumVar;
   } while (true);
-
-  delete[] backtrack_storage;
 
   // update alignment for NW (backtrack stops on first row or column)
   if (type_ == AlignmentType::kNW) {
@@ -1325,11 +1269,8 @@ Alignment SimdAlignmentEngine<A>::Affine(
         static_cast<std::uint32_t>(rank_to_node[i]->inedges.size()));
   }
 
-  typename T::type* backtrack_storage = nullptr;
-  typename T::type* H = AllocateAlignedMemory<A>(
-      &backtrack_storage,
-      6 * T::kNumVar + 3 * T::kNumVar * max_num_predecessors,
-      kRegisterSize / 8);
+  std::vector<typename T::Storage> backtrack_storage(6 * T::kNumVar + 3 * T::kNumVar * max_num_predecessors);
+  typename T::type* H = reinterpret_cast<typename T::type*>(backtrack_storage.data());
   typename T::type* H_pred = H + T::kNumVar;
   typename T::type* H_diag_pred = H_pred + T::kNumVar * max_num_predecessors;
   typename T::type* H_left = H_diag_pred + T::kNumVar * max_num_predecessors;
@@ -1542,8 +1483,6 @@ Alignment SimdAlignmentEngine<A>::Affine(
       }
     }
   } while (true);
-
-  delete[] backtrack_storage;
 
   // update alignment for NW (backtrack stops on first row or column)
   if (type_ == AlignmentType::kNW) {
@@ -1827,11 +1766,8 @@ Alignment SimdAlignmentEngine<A>::Convex(
         static_cast<std::uint32_t>(rank_to_node[i]->inedges.size()));
   }
 
-  typename T::type* backtrack_storage = nullptr;
-  typename T::type* H = AllocateAlignedMemory<A>(
-      &backtrack_storage,
-      9 * T::kNumVar + 4 * T::kNumVar * max_num_predecessors,
-      kRegisterSize / 8);
+  std::vector<typename T::Storage> backtrack_storage(9 * T::kNumVar + 4 * T::kNumVar * max_num_predecessors);
+  typename T::type* H = reinterpret_cast<typename T::type*>(backtrack_storage.data());
   typename T::type* H_pred = H + T::kNumVar;
   typename T::type* H_diag_pred = H_pred + T::kNumVar * max_num_predecessors;
   typename T::type* H_left = H_diag_pred + T::kNumVar * max_num_predecessors;
@@ -2088,8 +2024,6 @@ Alignment SimdAlignmentEngine<A>::Convex(
       }
     }
   } while (true);
-
-  delete[] backtrack_storage;
 
   // update alignment for NW (backtrack stops on first row or column)
   if (type_ == AlignmentType::kNW) {

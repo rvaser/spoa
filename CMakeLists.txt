@@ -1,22 +1,13 @@
 cmake_minimum_required(VERSION 3.12)
 
-project(spoa VERSION 4.1.1
+project(spoa VERSION 4.1.2
              LANGUAGES CXX
              DESCRIPTION "Spoa is a c++ library (and tool) for SIMD vectorized partial order alignment.")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic")
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-
-if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
-  if (${CMAKE_CXX_COMPILER_VERSION} VERSION_GREATER_EQUAL "5.0.0")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-aligned-new")
-  endif ()
-  if (${CMAKE_CXX_COMPILER_VERSION} VERSION_GREATER_EQUAL "6.1.0")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-ignored-attributes")
-  endif ()
-endif ()
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
