@@ -53,6 +53,7 @@ ninja -C build
 
 #### Options
 
+- `exe`: build executable
 - `tests`: build unit tests
 - `avx2`: build with `-mavx2`
 - `sse41`: build with `-msse4.1`

@@ -57,7 +57,7 @@ spoa_lib = library(
 # Executable #
 ##############
 
-if (not meson.is_subproject())
+if (not meson.is_subproject()) and get_option('exe')
   spoa_exe = executable(
     'spoa',
     files(['main.cpp']),

@@ -37,6 +37,15 @@ option('dispatch',
   value : false,
   description : 'Use SIMDe to generate x86 dispatch')
 
+##############
+# Executable #
+##############
+
+option('exe',
+  type : 'boolean',
+  value : true,
+  description : 'Build spoa executable')
+
 #########
 # Tests #
 #########
