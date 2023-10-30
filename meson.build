@@ -1,7 +1,7 @@
 project(
   'spoa',
   ['cpp'],
-  version : '4.1.2',
+  version : '4.1.3',
   default_options : [
     'buildtype=release',
     'warning_level=3',
@@ -26,7 +26,7 @@ if get_option('cereal')
   spoa_lib_deps += spoa_cereal_dep
 endif
 
-if (not meson.is_subproject())
+if (not meson.is_subproject()) and (get_option('exe') or get_option('tests'))
   # biosoup
   spoa_biosoup_dep = dependency('biosoup', version : '>= 0.11.0', fallback : ['biosoup', 'biosoup_dep'])
 
