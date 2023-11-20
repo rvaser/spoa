@@ -385,6 +385,28 @@ std::string Graph::GenerateConsensus(std::int32_t min_coverage) {
   return dst;
 }
 
+std::string Graph::GenerateConsensus(std::int32_t min_coverage,
+                                     std::vector<std::uint32_t> *summary) {
+  if (!summary) {
+    throw std::invalid_argument(
+        "[spoa::Graph::GenerateConsensus] error: invalid ptr to summary");
+  }
+  summary->clear();
+
+  auto dst = GenerateConsensus(min_coverage);
+  for (const auto &it : consensus_) {
+    if (static_cast<std::int32_t>(it->Coverage()) >= min_coverage) {
+      summary->emplace_back(0);
+      summary->back() += it->Coverage();
+      for (const auto &jt : it->aligned_nodes) {
+        summary->back() += jt->Coverage();
+      }
+    }
+  }
+
+  return dst;
+}
+
 std::string Graph::GenerateConsensus(
     std::vector<std::uint32_t>* summary,
     bool verbose) {
