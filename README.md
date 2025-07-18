@@ -24,10 +24,8 @@ Spoa (SIMD POA) is a c++ implementation of the partial order alignment (POA) alg
 
 ### CMake (3.12+)
 
-Forked from https://github.com/rvaser/spoa
-
 ```bash
-git clone https://github.com/neel/spoa && cd spoa
+git clone https://github.com/rvaser/spoa && cd spoa
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 make -C build
 ```
@@ -47,10 +45,8 @@ make -C build
 
 ### Meson (0.60.0+)
 
-Forked from https://github.com/rvaser/spoa
-
 ```bash
-git clone https://github.com/neel/spoa && cd spoa
+git clone https://github.com/rvaser/spoa && cd spoa
 meson setup build
 ninja -C build
 ```
