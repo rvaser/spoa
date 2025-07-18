@@ -336,14 +336,13 @@ std::vector<std::uint32_t> Graph::InitializeMultipleSequenceAlignment(
   return dst;
 }
 
-std::vector<std::string> Graph::GenerateMultipleSequenceAlignment(
-    bool include_consensus) {
+std::vector<std::string> Graph::GenerateMultipleSequenceAlignment(bool include_consensus, char gap) {
   std::uint32_t row_size = 0;
   auto node_id_to_column = InitializeMultipleSequenceAlignment(&row_size);
 
   std::vector<std::string> dst;
   for (std::uint32_t i = 0; i < sequences_.size(); ++i) {
-    std::string row(row_size, '-');
+    std::string row(row_size, gap);
     auto it = sequences_[i];
     while (true) {
       row[node_id_to_column[it->id]] = decoder_[it->code];
@@ -355,7 +354,7 @@ std::vector<std::string> Graph::GenerateMultipleSequenceAlignment(
   }
   if (include_consensus) {
     TraverseHeaviestBundle();
-    std::string row(row_size, '-');
+    std::string row(row_size, gap);
     for (const auto& it : consensus_) {
       row[node_id_to_column[it->id]] = decoder_[it->code];
     }
