@@ -45,8 +45,10 @@ make -C build
 
 ### Meson (0.60.0+)
 
+Forked from https://github.com/rvaser/spoa
+
 ```bash
-git clone https://github.com/rvaser/spoa && cd spoa
+git clone https://github.com/neel/spoa && cd spoa
 meson setup build
 ninja -C build
 ```
