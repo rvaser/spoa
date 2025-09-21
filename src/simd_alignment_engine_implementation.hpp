@@ -1962,9 +1962,9 @@ Alignment SimdAlignmentEngine<A>::Convex(
         j_mod = j % T::kNumVar;
         if ((j == -1) ||
             (((j_mod != T::kNumVar - 1 &&      E[j_mod] + e_ != E[j_mod + 1]) ||
-             (j_mod == T::kNumVar - 1 && E_left[j_mod] + e_ != E[0]))         &&
+              (j_mod == T::kNumVar - 1 && E_left[j_mod] + e_ != E[0]))        &&
              ((j_mod != T::kNumVar - 1 &&      Q[j_mod] + c_ != Q[j_mod + 1]) ||
-             (j_mod == T::kNumVar - 1 && Q_left[j_mod] + c_ != Q[0])))) {
+              (j_mod == T::kNumVar - 1 && Q_left[j_mod] + c_ != Q[0])))) {
           break;
         }
       }

@@ -1,7 +1,7 @@
 project(
   'spoa',
   ['cpp'],
-  version : '4.1.4',
+  version : '4.1.5',
   default_options : [
     'buildtype=release',
     'warning_level=3',
