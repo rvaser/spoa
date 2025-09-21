@@ -14,12 +14,10 @@ jobs:
     strategy:
       matrix:
         compiler:
-          - g++-7
           - g++
-          - clang++-6.0
           - clang++
 
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3

@@ -1,5 +1,5 @@
-# Compiled Object files
-build/
-
+.cache/
+.vscode/
+build*
 /subprojects/*
 !/subprojects/*.wrap
