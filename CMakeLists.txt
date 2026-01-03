@@ -269,6 +269,8 @@ if (spoa_build_exe)
 endif ()
 
 if (spoa_build_tests)
+  enable_testing()
+
   set(SPOA_TEST_DATA "${PROJECT_SOURCE_DIR}/test/data/sample.fastq.gz")
   configure_file(test/spoa_test_config.h.in spoa_test_config.h)
 
@@ -283,4 +285,6 @@ if (spoa_build_tests)
 
   target_include_directories(spoa_test PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
+
+  add_test(NAME spoa-test COMMAND spoa_test)
 endif ()
