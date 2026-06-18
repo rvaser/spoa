@@ -43,6 +43,10 @@ make -C build
 - `spoa_use_simde_openmp`: use SIMDe support for OpenMP SIMD
 - `spoa_generate_dispatch`: use SIMDe to generate x86 dispatch
 
+On `riscv64`, the default CMake build now skips x86-specific optimization
+flags and uses the SISD fallback unless SIMDe is explicitly enabled for
+porting work.
+
 ### Meson (0.60.0+)
 
 ```bash
