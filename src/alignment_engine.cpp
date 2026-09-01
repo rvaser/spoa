@@ -3,6 +3,7 @@
 #include "spoa/alignment_engine.hpp"
 
 #include <algorithm>
+#include <cstdlib>
 #include <exception>
 #include <limits>
 #include <stdexcept>
