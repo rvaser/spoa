@@ -161,8 +161,7 @@ class Graph {
       const char* sequence, std::uint32_t sequence_len,
       const char* quality, std::uint32_t quality_len);
 
-  std::vector<std::string> GenerateMultipleSequenceAlignment(
-      bool include_consensus = false);
+  std::vector<std::string> GenerateMultipleSequenceAlignment(bool include_consensus = false, char gap='-');
 
   std::string GenerateConsensus();
 
