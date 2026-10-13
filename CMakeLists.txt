@@ -32,8 +32,20 @@ option(spoa_use_simde_nonvec "Use SIMDe library for nonvectorized code" OFF)
 option(spoa_use_simde_openmp "Use SIMDe support for OpenMP SIMD" OFF)
 option(spoa_generate_dispatch "Use SIMDe to generate x86 dispatch" OFF)
 
+string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" spoa_processor_lower)
+if (spoa_processor_lower MATCHES "^riscv")
+  set(spoa_target_is_riscv ON)
+  message(STATUS
+    "RISC-V target detected; spoa will use the SISD fallback unless SIMDe is enabled")
+endif ()
+
 if (NOT spoa_generate_dispatch)
-  if (spoa_optimize_for_portability)
+  if (spoa_target_is_riscv)
+    if (spoa_optimize_for_native OR spoa_optimize_for_portability)
+      message(STATUS
+        "Skipping x86-specific optimization flags for RISC-V target")
+    endif ()
+  elseif (spoa_optimize_for_portability)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.1")
   elseif (spoa_optimize_for_native)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
