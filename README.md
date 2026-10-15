@@ -37,6 +37,8 @@ make -C build
 - `spoa_build_tests`: build unit tests
 - `spoa_optimize_for_native`: build with `-march=native`
 - `spoa_optimize_for_portability`: build with `-msse4.1`
+- `spoa_build_with_sse4_1`: build with `-msse4.1`
+- `spoa_build_with_avx2`: build with `-mavx2`
 - `spoa_use_cereal`: use cereal library
 - `spoa_use_simde`: build with SIMDe for porting vectorized code
 - `spoa_use_simde_nonvec`: use SIMDe library for nonvectorized code

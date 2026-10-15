@@ -16,6 +16,7 @@ jobs:
         compiler:
           - g++
           - clang++
+        sse41: [true, false]
 
     runs-on: ubuntu-latest
 
@@ -45,7 +46,7 @@ jobs:
 
       - name: Configure CMake
         run: |
-          cmake -B ${{ github.workspace }}/build_cmake -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+          cmake -B ${{ github.workspace }}/build_cmake -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} -Dspoa_build_with_sse4_1=${{ matrix.sse41 }}
           cmake --build ${{ github.workspace }}/build_cmake
         env:
           CXX: ${{ matrix.compiler }}
@@ -55,6 +56,7 @@ jobs:
         with:
           action: build
           directory: build_meson
+          setup-options: -Dsse41=${{ matrix.sse41 }}
           meson-version: 0.60.0
 
       - name: Test
